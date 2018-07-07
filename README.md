@@ -268,6 +268,29 @@ Now we can tag and push our image from the command line
 You should already be signed in and your username and password should be in keychain(mac) or credential manager(windows) from when you signed into Docker for Windows/Mac.  For more information on securely signing into Docker see [THIS](https://docs.docker.com/engine/reference/commandline/login/) page.
 
 
+Open up your command line and type the following command (replacing it with your Docker Account Name)
+
+You are using docker to tag the image we created (todov1) to associate it with your docker account.  
+
+<b>-> docker tag todov1 <_YourDockerAccountName_>/todov1</b>
+
+Next we want to push it to our DockerHub account. Run the following command at the command line. 
+
+<b>-> docker push <_YourDockerAccountName_>/todov1 </b>
+
+When it is done you should see something like the following.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/CompletedPush.png)
+
+You can check https://hub.Docker.com to verify it is there.  You now have your Docker Container in DockerHub for the world to use.
+
+
+
+
+
+##Uploading your container to ACR (Azure Container Registry)
+
+
 
 <pre><code>
 
