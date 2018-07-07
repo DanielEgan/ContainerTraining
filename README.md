@@ -4,14 +4,14 @@ This is a quick guide to walk you through getting up to speed using containers.
 In this guide we will walk you through the following
 
  - Building an asp.net Core WebAPI
- - Creating a Docker container with your app
+ - Putting your WebAPI in a Docker Container
  - Running the container locally
  - publishing the container to Docker Hub
  - publishing the container to ACR (Azure Container Registry)
  - Running the container in Azure using ACS (Azure Container Service)
  - Running the container as part of a cluster using AKS ( Azure Kubernetes Service)
  
-We will be pulling together hands on labs that will walk you through these steps with commentary. 
+We will be pulling together a mixture of hands on labs from the docs and HOLs in this document that will walk you through these steps with commentary. 
 
 
 
@@ -24,6 +24,8 @@ You will need the following things installed on your system to walk through thes
 Azure CLI [Azure CLI Directions](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 
 Docker for [Windows](https://docs.docker.com/v17.09/docker-for-windows/install/) or [Mac](https://docs.docker.com/v17.09/docker-for-mac/install/)
+
+[A Dockerhub Account](https://hub.docker.com/) - This is usually created when you install Docker for Mac or Windows and you sign in to the app. 
 
 Kubectl [Full Directions](https://kubernetes.io/docs/tasks/tools/install-kubectl/). --  [Easiest way](https://docs.microsoft.com/en-us/cli/azure/acs/kubernetes?view=azure-cli-latest) Must have Azure CLI installed 
 
@@ -233,7 +235,31 @@ That will give you a bash prompt right where your files are in the container. Th
 
 To exit, you will need to type <b>exit</b> at the bash prompt (as opposed to Ctrl + C)
 
+## Uploading to DockerHub
+Once you have your docker container running locally, you will want to put it in a repository so that it can be used. You have many options for this and usually it depends on a couple of things. First, is this an image that will be open source and be used as either a base image or a starter image? Or is this a personal/company image that needs to stay private.
 
+
+
+
+
+
+If your container is meant to be consumed (ala base image) DockerHub is probably the best place to host your container.  It allows easy access to it and works seamlessly in the Dockerfile.  If your container is a private container then you need to know where they are running. Your containers should be registered in the same cloud you use for hosting them. 
+
+- Azure Container Registry (ACR)
+- AWS EC2 Container Registry (ECR)
+- Google Container Registry
+- IBM Cloud Container Registry
+- Hosting your own in the cloud or locally with Docker Registry
+
+In this section, we are going to assume you want the world to see, and use your container, so we are going to host it in DockerHub. 
+
+--
+The first thing we need to do is to go to DockerHub https://hub.docker.com and create a repository to store our image. 
+
+
+![image](images/CreateRepository.png)
+
+You should already be signed in and your username and password should be in keychain(mac) or credential manager(windows) from when you signed into Docker for Windows/Mac.  For more information on securely signing into Docker see [THIS](https://docs.docker.com/engine/reference/commandline/login/) page
 
 <pre><code>
 
