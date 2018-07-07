@@ -41,7 +41,7 @@ C# for Visual Studio Code [https://marketplace.visualstudio.com/items?itemName=m
 
 
 
-## Creating an asp.net core app and running it in Docker
+## Creating an asp.net core WebAPI
 The first thing we need to to set up an asp.net core WebAPI to have something to call when we testing out containers.  For our purposes, this needs to be asp.net core since we will be using kubernetes and running linux containers.  If you need to run windows containers and classic ASP.net then you could use Azure Service Fabric (not covered in this training)  [Service Fabric Quick Start]( https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-quickstart-containers)
 
 
@@ -51,11 +51,11 @@ The first thing we need to to set up an asp.net core WebAPI to have something to
 
 [Create a Web API with ASP.NET Core and Visual Studio Code](https://docs.microsoft.com/en-us/aspnet/core/tutorials/web-api-vsc?view=aspnetcore-2) <span style="color:red"> SKIP THE CALLING FROM JQUERY SECTION</span>
 
-Now that we have create an asp.net core WebApi we want to prepare it for docker.  
+Now that we have created an asp.net core WebApi we want to prepare it for docker.  
 
---
+##Running your asp.net core WebAPI in Docker
 
-The first thing we want to do is to make some modifications to our project to prepare it for containerization. In our program.cs file, we need to add the .UserUrls() to our CreateWebHostBuilder method. By default, the app will listen to the localhost, ignoring any incoming requests from outside the container.  By adding "http://0.0.0.0:5000" or "http://*:5000" it will allow it to listen outside the container. There are many ways you can do this. This by far is the eaiset. 
+The first thing we want to do is to make some modifications to our project to prepare it for containerization. In our ***program.cs*** file, we need to add the ***.UserUrls()*** to our ***CreateWebHostBuilder*** method. By default, the app will listen to the localhost, ignoring any incoming requests from outside the container.  By adding "http://0.0.0.0:5000" or "http://*:5000" it will allow it to listen outside the container. There are many ways you can do this. This by far is the easiest. 
 
 <pre><code>
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
@@ -65,7 +65,7 @@ The first thing we want to do is to make some modifications to our project to pr
 </code></pre>
 --
 
-Next we want to to create a file called Dockerfile  (no extension) and place it in the root of your project. 
+Next, we want to to create a file called **Dockerfile**  (no extension) and place it in the root of your project.  [Dockerfile best practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
 
 
 There are many images to use as a base images for docker when using ASP.net Core. We are going to be using two of them. Docker 17.05 and higher allows multi-stage builds. 
@@ -95,7 +95,7 @@ The first thing we need to add to the Dockerfile we create is the base image. As
 
 </code></pre>
 
-Next we set the working directory.  This is where we will be building the image
+Next we set the working directory. (text in **Bold**)  This is where we will be building the app
 
 <pre><code>
 FROM microsoft/dotnet:2.1.300-sdk AS build-env
