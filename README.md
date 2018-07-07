@@ -257,11 +257,11 @@ In this section, we are going to assume you want the world to see, and use your 
 The first thing we need to do is to go to DockerHub https://hub.docker.com and create a repository to store our image. 
 
 
-![image](images/CreateRepository.png)
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/CreateRepository.png)
 
 Fill out the form with the desired information. 
 
-![image](images/CreateRepositoryForm.png)
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/CreateRepositoryForm.png)
 
 Now we can tag and push our image from the command line 
 
