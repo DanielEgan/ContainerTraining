@@ -259,7 +259,15 @@ The first thing we need to do is to go to DockerHub https://hub.docker.com and c
 
 ![image](images/CreateRepository.png)
 
-You should already be signed in and your username and password should be in keychain(mac) or credential manager(windows) from when you signed into Docker for Windows/Mac.  For more information on securely signing into Docker see [THIS](https://docs.docker.com/engine/reference/commandline/login/) page
+Fill out the form with the desired information. 
+
+![image](images/CreateRepositoryForm.png)
+
+Now we can tag and push our image from the command line 
+
+You should already be signed in and your username and password should be in keychain(mac) or credential manager(windows) from when you signed into Docker for Windows/Mac.  For more information on securely signing into Docker see [THIS](https://docs.docker.com/engine/reference/commandline/login/) page.
+
+
 
 <pre><code>
 
