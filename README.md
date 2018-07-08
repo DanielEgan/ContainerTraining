@@ -292,7 +292,7 @@ If we want to pull the image from  Docker Hub to your local machine, we need to 
 If you don’t specify the tag, you are going to pull the image tagged :latest
 
 
-##Uploading your container to ACR (Azure Container Registry)
+## Uploading your container to ACR (Azure Container Registry)
 
 Before we can upload our container to the Azure Container Registry (ACR) we need to actually create the registry.  There are three ways to do this:
 
@@ -311,7 +311,7 @@ This will give you not only the version of the az cli but also all the command l
 
  Make sure the it is above 2.0.27.  If not, go to the link in the prereqs and upgrade/install it.
  
-####Log in to az
+#### Log in to az
  
 If you have not used the Azure CLI before you will need to log in using the command 
 
@@ -329,7 +329,7 @@ This will give you a list (in table format) of all your resource groups.
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/listtables.png)
 
-####Create resource group and registry
+#### Create resource group and registry
 
 Now that we have confirmed we are logged in to azure from the command line we can very quickly create our resource group and our registry.
 
@@ -347,7 +347,7 @@ When it returns you should see the follow output.
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/registrycreate.png)
 
-####Upload our image to ACR
+#### Upload our image to ACR
 
 The first thing we need to do is to log into the ACR that we just created. You can do that with the following command using the name we created in the last step. 
 
@@ -392,7 +392,7 @@ Or view it on the Azure portal http://portal.azure.com
 
 Next we will run it in an Azure Container Instance.
 
-##Running an ACI (Azure Container Instance)s
+## Running an ACI (Azure Container Instance)s
 
 
 <pre><code>
