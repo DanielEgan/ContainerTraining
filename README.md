@@ -8,7 +8,7 @@ In this guide we will walk you through the following
  - Running the container locally
  - publishing the container to Docker Hub
  - publishing the container to ACR (Azure Container Registry)
- - Running the container in Azure using ACS (Azure Container Service)
+ - Running the container in Azure using ACI (Azure Container Service)
  - Running the container as part of a cluster using AKS ( Azure Kubernetes Service)
  
 We will be pulling together a mixture of hands on labs from the docs and HOLs in this document that will walk you through these steps with commentary. 
@@ -285,11 +285,114 @@ When it is done you should see something like the following.
 You can check https://hub.Docker.com to verify it is there.  You now have your Docker Container in DockerHub for the world to use.
 
 
+If we want to pull the image from  Docker Hub to your local machine, we need to type 
 
+**-> docker pull accountname/imagename:tag.**
+
+If you don’t specify the tag, you are going to pull the image tagged :latest
 
 
 ##Uploading your container to ACR (Azure Container Registry)
 
+Before we can upload our container to the Azure Container Registry (ACR) we need to actually create the registry.  There are three ways to do this:
+
+1. Use the Azure Portal to create the resource group and the registry ([Instructions here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-portal))
+2. Use Powershell ([Instructions Here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-get-started-powershell))
+3. User the Azure CLI 
+
+We are going to do it using the Azure CLI.  One of the prerequisites before starting this tutorial was to have the Azure ClI installed. In addition to this, we need to also make sure that the version of the Azure CLI that we have is version 2.0.27 or higher.  Type the following command into your terminal.
+
+**-> az --version**
+
+This will give you not only the version of the az cli but also all the command line interfaces that the az cli utilizes. 
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/azversion.png)
+
+
+ Make sure the it is above 2.0.27.  If not, go to the link in the prereqs and upgrade/install it.
+ 
+####Log in to az
+ 
+If you have not used the Azure CLI before you will need to log in using the command 
+
+**-> az login**
+
+This will print out the following line with a code to authenticate the azure cli with your Azure subscription.  If you have already done this, you can skip this step. 
+
+**_To sign in, use a web browser to open the page https://microsoft.com/devicelogin and enter the code SOMECODEHERE to authenticate_**
+
+If you want to test if you are signed in you can run the command to list the resource groups in your subscription.
+
+**-> az group list -o table**
+
+This will give you a list (in table format) of all your resource groups.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/listtables.png)
+
+####Create resource group and registry
+
+Now that we have confirmed we are logged in to azure from the command line we can very quickly create our resource group and our registry.
+
+To create the resource group type the following command
+
+**-> az group create --name todov1rg --location eastus**
+
+Now we can create our registry.  Just type the following command into the terminal. 
+
+**-> az acr create --resource-group todov1rg --name todov1registry --sku Basic**
+
+We are using the Basic sku for the registry which works well for testing.  There is also **Standard** and **Premium** skus.  [You can read about them here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-skus).
+
+When it returns you should see the follow output. 
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/registrycreate.png)
+
+####Upload our image to ACR
+
+The first thing we need to do is to log into the ACR that we just created. You can do that with the following command using the name we created in the last step. 
+
+**-> az acr login --name todov1registry**
+
+You should receive a **Login Succeeded** when it is complete. 
+
+To push an image to ACR you need to have it locally.  You could pull it from github and tag it but we already have ours local.  We just need to tag it close to the same way when we uploaded it to Dockerhub.
+
+We need to issue the following command using docker. 
+
+First, just to remind us of the name of the local image, not the one we tagged for Dockerhub, run the following command to see a list of all of our local images.
+
+**-> docker image ls
+
+You want to tag the todov1.  Not the ones that are already tagged for Dockerhub. (Your name will differ)
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/taggedimages.png)
+
+
+To tag it for ACR run the following fully qualified command. (which includes the .azurecr.io)
+
+**-> docker tag todov1 todov1registry.azurecr.io/todov1** 
+
+remember if you don't add a tag (with a colon like this todov1:beta) to the end of the image name it will be tagged as todov1:latest
+
+Finally, you can push the images using docker push.
+
+**-> docker push todov1registry.azurecr.io/todov1**
+
+When it completes, you should see output similar to the following. 
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/pushsuccess.png)
+
+If you want to see it in the repository, you can run the following command.
+
+**->az acr repository list --name todov1registry --output table**
+
+Or view it on the Azure portal http://portal.azure.com 
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/portalacr.png)
+
+Next we will run it in an Azure Container Instance.
+
+##Running an ACI (Azure Container Instance)s
 
 
 <pre><code>
