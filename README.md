@@ -8,6 +8,7 @@ In this guide we will walk you through the following
  - Running the container locally
  - publishing the container to Docker Hub
  - publishing the container to ACR (Azure Container Registry)
+ - Deploy the container using a web app in azure
  - Running the container in Azure using ACI (Azure Container Service)
  - Running the container as part of a cluster using AKS ( Azure Kubernetes Service)
  
@@ -55,7 +56,7 @@ Now that we have created an asp.net core WebApi we want to prepare it for docker
 
 ##Running your asp.net core WebAPI in Docker
 
-The first thing we want to do is to make some modifications to our project to prepare it for containerization. In our ***program.cs*** file, we need to add the ***.UserUrls()*** to our ***CreateWebHostBuilder*** method. By default, the app will listen to the localhost, ignoring any incoming requests from outside the container.  By adding "http://0.0.0.0:5000" or "http://*:5000" it will allow it to listen outside the container. There are many ways you can do this. This by far is the easiest. 
+The first thing we want to do is to make some modifications to our project to prepare it for containerization. In our ***program.cs*** file, we need to add the ***.UserUrls()*** to our ***CreateWebHostBuilder*** method. By default, the app will listen to the localhost, ignoring any incoming requests from outside the container.  By adding "http://0.0.0.0:5000" or "http://*:5000" it will allow it to listen outside the container. There are many ways you can do this. This by far is the easiest. (We will also *EXPOSE* it in the Dockerfile too to allow it to be accessed in the cloud)
 
 <pre><code>
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
@@ -95,11 +96,12 @@ The first thing we need to add to the Dockerfile we create is the base image. As
 
 </code></pre>
 
-Next we set the working directory. (text in **Bold**)  This is where we will be building the app
+Next we set the working directory and EXPOSE port 5000. (text in **Bold**)  This is where we will be building the app
 
 <pre><code>
 FROM microsoft/dotnet:2.1.300-sdk AS build-env
-<b>WORKDIR /app</b>
+<b>WORKDIR /app
+EXPOSE 5000</b>
 
 </code></pre>
 
@@ -107,6 +109,7 @@ After that we copy the project file over and use the dotnet cli to call restore
 <pre><code>
 FROM microsoft/dotnet:2.1.300-sdk AS build-env
 WORKDIR /app
+EXPOSE 5000
 
 <b># copy csproj and restore as distinct layers
 COPY *.csproj ./
@@ -117,6 +120,7 @@ Then copy everything else and use the dotnet cli on the image to publish a relea
 <pre><code>
 FROM microsoft/dotnet:2.1.300-sdk AS build-env
 WORKDIR /app
+EXPOSE 5000
 
 # copy csproj and restore as distinct layers
 COPY *.csproj ./
@@ -132,6 +136,7 @@ Now since everything is published we can use the runtime version to create the i
 <pre><code>
 FROM microsoft/dotnet:2.1.300-sdk AS build-env
 WORKDIR /app
+EXPOSE 5000
 
 # copy csproj and restore as distinct layers
 COPY *.csproj ./
@@ -150,12 +155,15 @@ ENTRYPOINT ["dotnet", "ToDoV1.dll"]
 </code></pre>
 
 --
-We also want to create a <b>.dockerignore</b>  (don't forget the '.' in front of the name) this will make sure we keep the image as fast and as small as possible by ignoring files we don't care about. Place it in the root of your project directory (same as Dockerfile). We are excluding the bin and obj folders but you can add anything you don't need here. 
-<pre><code>
-<b>
-bin\
-obj\
-</b>
+We also want to create a <b>.dockerignore</b>  (don't forget the '.' in front of the name) this will make sure we keep the image as fast and as small as possible by ignoring files we don't care about. Place it in the root of your project directory (same as Dockerfile). We are excluding the bin and obj folders, as well as stuff associated with VSCode and git,  but you can add anything you don't need packaged in the container. 
+<pre><code><b>.dockerignore
+.env
+.git
+.gitignore
+.vs
+.vscode
+*/bin
+*/obj</b>
 </code></pre>
 --
 
@@ -390,9 +398,27 @@ Or view it on the Azure portal http://portal.azure.com
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/portalacr.png)
 
-Next we will run it in an Azure Container Instance.
+Next we will run it in an Azure Web App.
 
-## Running an ACI (Azure Container Instance)s
+## Deploying your image as and Azure Web App
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp1.png)
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp2.png)
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp3.png)
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp4.png)
+
+
+
+## Deploying your image to ACI (Azure Container Instance)
+
+Now normally you will be doing your deploying headless.  Meaning using some sort of CI/CD Pipeline to deploy your container from ACR to ACI or others. In that case you will want to authenticate using a service principal.  You can find a quickstart [here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-aci), on how to do it or more information on using service principals [here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal). 
+
+For our image we will enable the admin user on the registry so we can do it manually from the command line interface. To enable it, you run the following command (keep in mind we are still logged in to acr).
+
+**-> az acr update --name todov1registry --admin-enabled true**
 
 
 <pre><code>
