@@ -402,15 +402,40 @@ Next we will run it in an Azure Web App.
 
 ## Deploying your image as and Azure Web App
 
+We are not going to be spending time on what an Azure Web App is other than acknowledging that it is a place in azure that allows you to host websites, apis, and now containers, with the ability to easily scale them, create minor CD/CI, among other things. We are going to use one as one way to host our simple todo api container.  
+
+For this section we are going to move from the command line and use the visual tools at http://portal.azure.com.  Once you sign on to your account, click on the **Create a resource** link and search for web app (or just navigate to it).  Click on where you see **Web App**  
+
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp1.png)
+
+On the next page, simply click on the **Create** button.
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp2.png)
 
+When the WebApp blade comes up you will need to do the following :
+
+- Give it a name (must be unique across azure
+- Select your subscription
+- Create or use a Resource Group (we created **todov1rg** in other exercises)
+- Select an **App Service plan/Location** -- Select a region that is in or near your hosted container
+- Configure Container
+ - Select **Single Container**
+ - Select **Azure Container Registry** -- Although as you can see, you can select others
+ - Fill in all the dropdowns (nothing in Startup File)
+ - Click **OK**
+
+
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp3.png)
+
+When your resource comes up you should be able to navigate to the url provided. Make sure you add the **/api/todo** to the end of the url
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp4.png)
 
+You should see the same json returned that we saw locally.
 
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp5.png)
+
+Next, we will deploy to Azure Container Instances
 
 ## Deploying your image to ACI (Azure Container Instance)
 
