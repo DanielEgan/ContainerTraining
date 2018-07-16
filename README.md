@@ -498,6 +498,10 @@ Next, we will deploy our container in a Kubernetes Cluster.
 
 ## Deploying your image in a Kubernetes Cluster
 
+```
+
+
+``` 
 
 <pre><code>
 
