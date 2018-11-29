@@ -553,13 +553,14 @@ Next, we will deploy our container in a Kubernetes Cluster.
 
 ## Deploying your image in a Kubernetes Cluster
 
+### Setting up the cluster
 Now we will deoploy our container to the fourth of our options, a Kubernetes cluster. To do this we will be using AKS the Microsoft Managed Kubernetes service.  We will use a combination of the azure-cli and the portal.  To begin, we first need to make sure that AKS is associated with your subscrition.  To do that, run the following command.
 
-<b> -> az provider register -n Microsoft.ContainerService</b>
+  <b> -> az provider register -n Microsoft.ContainerService</b>
 
 When that finishes, we can create the AKS cluster inside the resource group that we have been using for this workshop **todov1rg** to do this, type the following command.
 
-<b> -> az aks create --resource-group todov1rg --name todov1service --node-count 2 --generate-ssh-keys</b>
+  <b> -> az aks create --resource-group todov1rg --name todov1service --node-count 2 --generate-ssh-keys</b>
 
 This will beging to create our cluster with two VMs and generate out ssh-keys for us. 
 
@@ -569,13 +570,14 @@ This will take a while to spin up so be prepared to wait 5 or 10 minutes.  When 
 
 You now have your first kubernetes cluster in Azure. 
 
+### Taking a look around
 Before we deploy our application to the cluster, lets take a spin around what was created. 
 
 If you go to the portal and look at the resource group you created your cluster in **todov1rg** 
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s2.png)
 
-you will notice that there is only one item that relates to the cluster in there, the service itself. 
+you will notice that there is only one item that relates to the cluster in there, the service itself. This is the pointer to the master node and is managed for you by azure (patching, upgrading, etc...). You don't have access to the master node.
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s3.png)
 
@@ -586,6 +588,40 @@ So where is all the other stuff associated with the service?  If you go back to 
 If you click on that resource group you will see all of the other things that were created for your cluster. (The VM's the disks, Virtual Network, etc...)
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s5.png)
+
+### Working with Kubctl 
+
+Kubectl, pronouced "Kube cuttle" or "Kube control" depending on who you ask, is your command line interface to your kubernetes cluster. We installed this as part of the pre-reqs at the begining of the lab. If you did not, head back up there before continuing.  We will be using this tool to deploy and manage our applications and services to the nodes we created.  In addition, we are also going to utilizing YAML files to do our deployment.  We will not be going deep into YAML files here, they are a text based file that is used to set configurations (pods, deployments, etc...) in our cluster.  If you would like to learn more about them just search [Yaml files for beginners](https://www.google.com/search?q=Yaml+Files+for+beginers&oq=Yaml+Files+for+beginers).
+
+So to communicate with our Azure Kubernetes Cluster we need to connect **Kubectl** to our cluster. To do that we need to execute the following command. 
+
+  <b> -> az aks get-credentials --resource-group todov1rg --name todov1service</b>
+
+You should see a message similar to the one below stating that it Merged as current context
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s5.png)
+
+Once you have this done, you can run kubectl commands againts the cluster. Try a few of them out, starting with :
+
+Get all the commands you can run
+  <b> -> kubectl --help</b>  
+
+Get all the nodes in the cluster
+  <b> -> kubectl get nodes</b>
+
+Get Cluster component statuses
+  <b> -> kubectl get cs</b>
+
+Get all pods(you dont have any yet)
+  <b> -> kubectl get pods</b>
+
+Get all deployments
+  <b> -> kubectl get deployoments</b>
+
+
+Feel free to try out other commands.
+
+
 
 ```
 
