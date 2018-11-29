@@ -599,7 +599,7 @@ So to communicate with our Azure Kubernetes Cluster we need to connect **Kubectl
 
 You should see a message similar to the one below stating that it Merged as current context
 
-![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s5.png)
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s6.png)
 
 Once you have this done, you can run kubectl commands againts the cluster. Try a few of them out, starting with :
 
