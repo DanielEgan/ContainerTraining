@@ -455,20 +455,35 @@ Sign into the Azure portal if you have not done so already.
 Navigate to the webapp we created in the previous lab.
 
 Click on Deployments Slots (Or Deployment Slots Preview) and click on Add Slot
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd1.png)
 
 Create a slot called Staging.  Under Configuration Source, select your production slot (it should just say the name of the webapp) then click OK. 
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd2.png)
+
 This will clone the existing webapp and add the current container to this slot. Wait for this to complete.
 When the stage appears, click on the stage to open up the overview. 
 
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd3.png)
+
 As you can see, the URL for this slot is the same as your production webapp with -staging appended to it.  If you would like to verify that it is working correctly, you can click on the URL to open it (dont forget to append it with /api/todo)
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd4.png)
 
 Once you are done testing, click on container settings for the staging slot you are on (not the main webapp production slot)
 Under Continuous Deployment click the ON toggle and select save.  This will create a webhook.
 
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd5.png)
+
 
 Next, navigate to the registry you created (todov1registry) and select Webhooks.  
-Click the elipses (...) at the end of your webhook.  From here you can make configuration changes.  For example you can set the scope, which tells the webhook which tagged image to look for.  If no tag is specified then :latest will be selected.
+Click the elipses (...) at the end of your webhook. 
 
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd6.png)
+
+ From here you can make configuration changes.  For example you can set the scope, which tells the webhook which tagged image to look for.  If no tag is specified then :latest will be selected.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd7.png)
 
 
 If you would like to set up this same thing with Docker Hub you can follow the directions at the bottom of [This Page](https://docs.microsoft.com/en-us/azure/app-service/containers/app-service-linux-ci-cd)
