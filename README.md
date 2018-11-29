@@ -150,7 +150,7 @@ RUN dotnet publish -c Release -o out
 FROM microsoft/dotnet:2.1.0-aspnetcore-runtime
 WORKDIR /app
 COPY --from=build-env /app/out .
-ENTRYPOINT ["dotnet", "ToDoV1.dll"]
+ENTRYPOINT ["dotnet", "TodoApi.dll"]
 </b>
 </code></pre>
 
@@ -234,6 +234,7 @@ Next we can run the container.
 - --name is of the container
 - and lastly, the name you gave it in the previous step. 
 
+To prove to yourself that the container is running the app on your machine, open a browser and navigate to http://localhost:5000/api/todo.
 
 If you want to look around the container you can have it give you a bash prompt when you run it.  Normally you can just add /bin/bash  to the end of the command but if you have an entrypoint defined (we do) you have to run the command like this.
 
@@ -347,7 +348,9 @@ To create the resource group type the following command
 
 Now we can create our registry.  Just type the following command into the terminal. 
 
-**-> az acr create --resource-group todov1rg --name todov1registry --sku Basic**
+**-> az acr create --resource-group todov1rg --name <_YourRegistryName_> --sku Basic**
+
+The registry name needs to be unique, so use <your email alias>todov1registry. 
 
 We are using the Basic sku for the registry which works well for testing.  There is also **Standard** and **Premium** skus.  [You can read about them here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-skus).
 
@@ -359,7 +362,7 @@ When it returns you should see the follow output.
 
 The first thing we need to do is to log into the ACR that we just created. You can do that with the following command using the name we created in the last step. 
 
-**-> az acr login --name todov1registry**
+**-> az acr login --name <_YourRegistryName_>**
 
 You should receive a **Login Succeeded** when it is complete. 
 
@@ -378,13 +381,13 @@ You want to tag the todov1.  Not the ones that are already tagged for Dockerhub.
 
 To tag it for ACR run the following fully qualified command. (which includes the .azurecr.io)
 
-**-> docker tag todov1 todov1registry.azurecr.io/todov1** 
+**-> docker tag todov1 <_YourRegistryName_>.azurecr.io/todov1** 
 
 remember if you don't add a tag (with a colon like this todov1:beta) to the end of the image name it will be tagged as todov1:latest
 
 Finally, you can push the images using docker push.
 
-**-> docker push todov1registry.azurecr.io/todov1**
+**-> docker push <_YourRegistryName_>.azurecr.io/todov1**
 
 When it completes, you should see output similar to the following. 
 
@@ -392,7 +395,7 @@ When it completes, you should see output similar to the following.
 
 If you want to see it in the repository, you can run the following command.
 
-**->az acr repository list --name todov1registry --output table**
+**->az acr repository list --name <_YourRegistryName_> --output table**
 
 Or view it on the Azure portal http://portal.azure.com 
 
@@ -435,6 +438,10 @@ You should see the same json returned that we saw locally.
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp5.png)
 
+If you do not see the json, you may need to configure Azure to use port 5000. Go to the Application Settings blade. Click Add new setting. Add an App Setting of PORT and set its value to 5000. Then click Save at the top of the page.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp6.png)
+
 Next, we will deploy to Azure Container Instances
 
 ## Deploying your image to ACI (Azure Container Instance)
@@ -443,7 +450,7 @@ Now normally you will be doing your deploying headless.  Meaning using some sort
 
 For our image we will enable the admin user on the registry so we can do it manually from the command line interface. To enable it, you run the following command if we want. (keep in mind we are still logged in to acr). 
 
-**-> az acr update --name todov1registry --admin-enabled true**
+**-> az acr update --name <_YourRegistryName_> --admin-enabled true**
 
 The rest of the section, we are going to again do it visually in the portal.
 
