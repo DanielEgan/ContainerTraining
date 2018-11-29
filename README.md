@@ -435,6 +435,39 @@ You should see the same json returned that we saw locally.
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/webapp5.png)
 
+Next, we will set up CD for your container in a web app
+
+## Setting up Continuous Deployment for your container in a Web App
+
+There are multiple ways to enable CI/CD piplelines for your containers.  The most robust woudl be to use Azure Dev Ops and pipelines to implement gates and checks along the way. For this lab though, we are going to the ACR webhook.  Also, we are only setting up CI/CD for the staging slot.  In this simple scenario, we want to be able to swap staging and production manually once we are confident that the new container works properly. 
+
+So to set up the webhook you will need to do the following:
+
+Sign into the Azure portal if you have not done so already.
+
+Navigate to the webapp we created in the previous lab.
+
+Click on Deployments Slots (Or Deployment Slots Preview) and click on Add Slot
+
+Create a slot called Staging.  Under Configuration Source, select your production slot (it should just say the name of the webapp) then click OK. 
+This will clone the existing webapp and add the current container to this slot. Wait for this to complete.
+When the stage appears, click on the stage to open up the overview. 
+
+As you can see, the URL for this slot is the same as your production webapp with -staging appended to it.  If you would like to verify that it is working correctly, you can click on the URL to open it (dont forget to append it with /api/todo)
+
+Once you are done testing, click on container settings for the staging slot you are on (not the main webapp production slot)
+Under Continuous Deployment click the ON toggle and select save.  This will create a webhook.
+
+
+Next, navigate to the registry you created (todov1registry) and select Webhooks.  
+Click the elipses (...) at the end of your webhook.  From here you can make configuration changes.  For example you can set the scope, which tells the webhook which tagged image to look for.  If no tag is specified then :latest will be selected.
+
+
+
+If you would like to set up this same thing with Docker Hub you can follow the directions at the bottom of [This Page](https://docs.microsoft.com/en-us/azure/app-service/containers/app-service-linux-ci-cd)
+
+If you would like to see how to use Azure DevOps to deploy your container you can look [Here](https://docs.microsoft.com/en-us/azure/devops/pipelines/apps/cd/deploy-docker-webapp?view=vsts)
+
 Next, we will deploy to Azure Container Instances
 
 ## Deploying your image to ACI (Azure Container Instance)
