@@ -553,6 +553,40 @@ Next, we will deploy our container in a Kubernetes Cluster.
 
 ## Deploying your image in a Kubernetes Cluster
 
+Now we will deoploy our container to the fourth of our options, a Kubernetes cluster. To do this we will be using AKS the Microsoft Managed Kubernetes service.  We will use a combination of the azure-cli and the portal.  To begin, we first need to make sure that AKS is associated with your subscrition.  To do that, run the following command.
+
+<b> -> az provider register -n Microsoft.ContainerService</b>
+
+When that finishes, we can create the AKS cluster inside the resource group that we have been using for this workshop **todov1rg** to do this, type the following command.
+
+<b> -> az aks create --resource-group todov1rg --name todov1service --node-count 2 --generate-ssh-keys</b>
+
+This will beging to create our cluster with two VMs and generate out ssh-keys for us. 
+
+This will take a while to spin up so be prepared to wait 5 or 10 minutes.  When it completes you will see somthing similar to this.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s1.png)
+
+You now have your first kubernetes cluster in Azure. 
+
+Before we deploy our application to the cluster, lets take a spin around what was created. 
+
+If you go to the portal and look at the resource group you created your cluster in **todov1rg** 
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s2.png)
+
+you will notice that there is only one item that relates to the cluster in there, the service itself. 
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s3.png)
+
+So where is all the other stuff associated with the service?  If you go back to your resource groups, you will notice that there is a new resource group called MC_todov1rg_todov1service_eastus (MC = Managed Cluster/ original resource group / name of service / region of service)
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s4.png)
+
+If you click on that resource group you will see all of the other things that were created for your cluster. (The VM's the disks, Virtual Network, etc...)
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s5.png)
+
 ```
 
 
