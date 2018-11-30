@@ -9,6 +9,7 @@ In this guide we will walk you through the following
  - publishing the container to Docker Hub
  - publishing the container to ACR (Azure Container Registry)
  - Deploy the container using a web app in azure
+ - Setting up Continuous Deployment for your container in a Web App
  - Running the container in Azure using ACI (Azure Container Service)
  - Running the container as part of a cluster using AKS ( Azure Kubernetes Service)
  
@@ -489,6 +490,72 @@ Click the elipses (...) at the end of your webhook.
 If you would like to set up this same thing with Docker Hub you can follow the directions at the bottom of [This Page](https://docs.microsoft.com/en-us/azure/app-service/containers/app-service-linux-ci-cd)
 
 If you would like to see how to use Azure DevOps to deploy your container you can look [Here](https://docs.microsoft.com/en-us/azure/devops/pipelines/apps/cd/deploy-docker-webapp?view=vsts)
+
+
+Of course, now we want to test to make sure it works right?  The first thing we need to do is make some sort of change.  You can make any change you want to the web app but lets make this easy.  Go ito the ToDoController.cs file and change the word Item1 to Item1Chagned (or whatever you woudl like).  This is what we have been looking at when we test our service.
+
+```
+        public TodoController(TodoContext context)
+        {
+            _context = context;
+
+            if (_context.TodoItems.Count() == 0)
+            {
+                _context.TodoItems.Add(new TodoItem { Name = "Item1Changed" });
+                _context.SaveChanges();
+            }
+        }
+```
+
+Once we have done this we can use Docker to build the new image and push it to ACR. 
+
+Build image(dont forget the '.' at the end)
+(make sure you are in the directory that your dockerfile is in)
+
+<b> -> docker build -t todov1 .</b>
+
+Tag image for ACR
+
+<b>docker tag todov1 todov1registry.azurecr.io/todov1</b>
+
+Push to ACR (You may need to log in again to ACR - az acr login --name <YourRegistryName>)
+
+<b>docker push todov1registry.azurecr.io/todov1</b>
+
+  When done, you command line will look similar to this (look for errors)
+
+```
+➜  ToDoV2AddingDocker git:(master) ✗ docker push todov1registry.azurecr.io/todov1
+The push refers to repository [todov1registry.azurecr.io/todov1]
+ed663896211d: Layer already exists
+8ddd1b1e11fa: Layer already exists
+f3f4bb43b885: Layer already exists
+280a1e8bf3b7: Layer already exists
+fd98629870ee: Layer already exists
+d626a8ad97a1: Layer already exists
+expose: digest: sha256:4be2518323181c8954ac4a22b47ced6e21c1e10da6986332859e152aff5f2e02 size: 1579
+f131451deafe: Layer already exists
+8ddd1b1e11fa: Layer already exists
+f3f4bb43b885: Layer already exists
+280a1e8bf3b7: Layer already exists
+fd98629870ee: Layer already exists
+d626a8ad97a1: Layer already exists
+latest: digest: sha256:4ba89a74e3f74fed7e18b88bac053fb070638d4362b8ee96003c57cb89ed8c12 size: 1579
+```
+
+If you go to the Webhooks section of your registry, you can check to make sure it succeeded. (200).
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd8.png)
+
+And finally, make a call to the staging URL to confirm that the change you made shows up.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd9.png)
+
+Finally, you can go to the Deployment Slots on yoyur web app and swap images OR go to the Deployment Slots (Preview) and send a percentage of traffic to the new container. 
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd10.png)
+
+-> 
 
 Next, we will deploy to Azure Container Instances
 
