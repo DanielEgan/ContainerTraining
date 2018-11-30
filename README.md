@@ -621,12 +621,131 @@ Get all deployments
 
 Feel free to try out other commands.
 
+### Getting Secret to access private ACR
 
+We could of course delploy our image from DockerHub since there is no authentication needed but in most cases you will not be doing that.  So for us to deploy our ACR image to the Kubernetes Cluster we will need to give Kubernetes access to the ACR.  They typical way an organization would do this would be to use [AAD and Service Principal] (https://docs.microsoft.com/en-us/azure/container-registry/container-registry-authentication) but for this exercise we will be generating a secret for AKS to use to access ACR. 
+
+In the last exercise where we loaded our container to ACI (Azure container instance) we enabled an admin user on our ACR.  We will need that for this exercise.  If you did not keep it around you can find it by going to your ACR (Azure Container Registry) and click on Access Keys.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s6.png)
+
+Either keep that page open or save them for our next command.  The command we need to run is the following:
+
+<b>kubectl create secret docker-registry SECRET_NAME --docker-server=REGISTRY_NAME.azurecr.io --docker-username=USERNAME --docker-password=PASSWORD --docker-email=ANY_VALID_EMAIL</b>
+
+SECRET_NAME = todov1secret -- (This is the name you will use in the Yaml file.)
+
+REGISTRY_NAME = todov1registry -- (This is what mine is named, yours may be different)
+
+USERNAME = Copy from last step
+
+PASSWORD = Copy form last step
+
+ANY_VALID_EMAIL = ummm any valid email :)
+
+
+When you have run this command you will then see the following on the command line.
+
+  <b>secret "todov1secret" created</b>
+
+
+Now we can load our our container into our cluster using the Yaml file.  I have created the file for you. You can find it in this repository called aks.yaml.  Before we run it, I am going to break it down into pieces and explain what it does.
+
+First we are telling the cluster that we are creating a deployment called todo
 
 ```
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: todo
+```
+Next, we tell it that we want three replicas of the image. The app is named todo (we need that later for the load balancer)
 
+```
+spec:
+  replicas: 3 
+  template:
+    metadata:
+      labels:
+        app: todo
+```
+We point the the container in ACR (I am using one that I had with and EXPOSE tag. If you leave off the tag it will select :latest)
+
+```
+    spec:
+      containers:
+      - name: todo
+        image: todov1registry.azurecr.io/todov1:expose
+```
+Next, we set the port that we want access to for the app. As you remember we also use expose in the docker file to expose port 5000. We set a few resource limits.
+
+```
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+
+```
+We add the image pull secret that we created in the last step
+
+```
+      imagePullSecrets:
+      - name: todov1secret
+```
+Finally, we create a load balancer to spread the load between the 3 replicas that we create.  We map port 80 to port 5000 to access the api.
+
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: todo
 
 ``` 
+
+Finally, we run the yaml file with the following command. (Make sure you are in the same directory as the Yaml file when you run it)  -f denotes filename
+
+<b> -> kubectl create -f aks.yaml </b>
+
+This will start to deploy your containters, pods, replicas, etc..   Try running the commands we played with before. 
+
+Get all the nodes in the cluster
+  <b> -> kubectl get nodes</b>
+
+Get Cluster component statuses
+  <b> -> kubectl get cs</b>
+
+Get all pods(you dont have any yet)
+  <b> -> kubectl get pods</b>
+
+Get all deployments
+  <b> -> kubectl get deployoments</b>
+
+Get all servides
+  <b> -> kubectl get service</b>
+
+That last one is the one we need to test our cluster. Once created, the load balancer will have an external port that we can hit which will then send the call to the container on port 5000.
+
+It will look something like this:
+
+```
+NAME         TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)        AGE
+kubernetes   ClusterIP      10.0.0.1       <none>          443/TCP        4h
+todo         LoadBalancer   10.0.125.123   168.62.168.84   80:31318/TCP   4m
+```
+
+Once you have that External-IP you can test your cluster to see your app working. http://188.62.168.84/api/todo  (Yours will be different)
+
 
 <pre><code>
 

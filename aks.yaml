@@ -1,0 +1,35 @@
+﻿apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: todo
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: todo
+    spec:
+      containers:
+      - name: todo
+        image: todov1registry.azurecr.io/todov1:expose
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+      imagePullSecrets:
+      - name: todov1secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: todo
