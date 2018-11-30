@@ -747,6 +747,63 @@ todo         LoadBalancer   10.0.125.123   168.62.168.84   80:31318/TCP   4m
 Once you have that External-IP you can test your cluster to see your app working. http://188.62.168.84/api/todo  (Yours will be different)
 
 
+Finially, if you prefer to visually see the condition of your cluster you can do that through the portal (kind of).  In the Azure portal navigate to the service you created.  Remember, this can be found in the todov1rg resourse group called todov1service.  On the service's overview tab you will see three options :
+
+- Monitor Container
+- View Logs
+- View Kubernetes dashboard
+
+Select View Kubernetes Dashboard
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s8.png)
+
+This will open up a blade that shows you how to view the dashboard. You have already done numbers one through three.  Select the copy icon from number four and paste it into your command line to run it.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s9.png)
+
+It will produce something like this on the command line.
+
+```
+ContainerTraining git:(master) az aks browse --resource-group todov1rg --name todov1service
+Merged "todov1service" as current context in /var/folders/y1/8kxz0m9n3v9d8hw8p2nlsmhr0000gn/T/tmpuxlphmzg
+Proxy running on http://127.0.0.1:8001/
+Press CTRL+C to close the tunnel...
+Forwarding from 127.0.0.1:8001 -> 9090
+Forwarding from [::1]:8001 -> 9090
+Handling connection for 8001
+Handling connection for 8001
+Handling connection for 8001
+Handling connection for 8001
+```
+
+It will then launch a browser for you to view your cluster.  You should see somethig like this when it opens.  Starting with Kubernetes v1.7 RBAC (Role Binding Access Control) is enabled by default.  This prevents the dashboard from accessing your cluster.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s10.png)
+
+To learn about how to fix this you can visit this page. [Accessing RBAC enabled Kubernetes Dashboard](https://unofficialism.info/posts/accessing-rbac-enabled-kubernetes-dashboard/)
+
+As in other parts of this tutorial, there is the way you should do it in production, and the way we are going to do it here.  In practice, you should utilize your service account to give access to the dashboard with tokens which has many steps.
+
+We are going to grant admin privliges to the Dashboards Service account which will work but might be a security risk. [see here](https://github.com/kubernetes/dashboard/wiki/Access-control#admin-privileges)
+
+Since this is just a demo for us, we will grant admin privliges with the follow command: 
+
+Run this in your command line.
+
+<b> ->  kubectl create clusterrolebinding kubernetes-dashboard -n kube-system --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard</b>
+
+
+Once this is done, you can try to bring up the dashboard again by running the following (which you had copied earlier from the portal)
+
+<b>-> az aks browse --resource-group todov1rg --name todov1service</b>
+
+This will give you access to your dashboard as seen below.  You can get all the same information you get from Kubectl but now in an interface.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/k8s11.png)
+
+From here feel free to play around with your cluster search the Kubectl commands (Kubectl --help) to remove pods, add pods, check on health, modify your Yaml.  Its just a demo so its ok if you break it. 
+
+Enjoy!!
 <pre><code>
 
 </code></pre>
