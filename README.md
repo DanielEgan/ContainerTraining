@@ -55,7 +55,7 @@ The first thing we need to to set up an asp.net core WebAPI to have something to
 
 Now that we have created an asp.net core WebApi we want to prepare it for docker.  
 
-##Running your asp.net core WebAPI in Docker
+## Running your asp.net core WebAPI in Docker
 
 The first thing we want to do is to make some modifications to our project to prepare it for containerization. In our ***program.cs*** file, we need to add the ***.UserUrls()*** to our ***CreateWebHostBuilder*** method. By default, the app will listen to the localhost, ignoring any incoming requests from outside the container.  By adding "http://0.0.0.0:5000" or "http://*:5000" it will allow it to listen outside the container. There are many ways you can do this. This by far is the easiest. (We will also *EXPOSE* it in the Dockerfile too to allow it to be accessed in the cloud)
 
