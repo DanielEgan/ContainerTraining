@@ -92,6 +92,8 @@ You can find out more information about these different builds [here](https://an
 
 The first thing we need to add to the Dockerfile we create is the base image. As stated previously, we will be using the build image.  We name it build-env to reference it later in the file. 
 
+The file itself will only have the code sections that you need to type, inbetween we explain what each section is for. Start by typing the following at the top of the file you just created (dockerfile)
+
 <pre><code>
 <b>FROM microsoft/dotnet:2.1.300-sdk AS build-env</b>
 
@@ -154,8 +156,12 @@ COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "TodoApi.dll"]
 </b>
 </code></pre>
+> **IMPORTANT** You want to make sure that the dll referenced in the last line of your dockerfile (TodoApi.dll in this case) matches what will be produced by your application.  Meaning if you named your application something other than TodoApi then you will need to change this line.  If you dont, you will get a strange error like the following <b>Did you mean to run dotnet SDK commands? Please install dotnet SDK from</b> and you wont know what is causing it. 
 
---
+
+
+
+
 We also want to create a <b>.dockerignore</b>  (don't forget the '.' in front of the name) this will make sure we keep the image as fast and as small as possible by ignoring files we don't care about. Place it in the root of your project directory (same as Dockerfile). We are excluding the bin and obj folders, as well as stuff associated with VSCode and git,  but you can add anything you don't need packaged in the container. 
 <pre><code><b>.dockerignore
 .env
@@ -172,7 +178,9 @@ Now we want to create our images using docker at the command line.  Open up your
 
 Don't forget the '.' at the end. This will build our image according to our Dockerfile and give it a name of todov1.  It will be tagged as todov1:latest.  If we want our own tag we just add it in the command todov1:testversion or todov1:version1.0
 
-<b> -> docker build -t todov1 . </b>
+```
+-> docker build -t todov1 . 
+```
 
 It should produce something similar to this. You can see it creating the directories, restoring packages, creating the dll, copying files, destroying the build image, etc...
 <pre><code>
@@ -226,7 +234,9 @@ Successfully tagged todov1:latest
 --
 Next we can run the container. 
 
-<b> -> docker run -it --rm -p 5000:5000 -e "ASPNETCORE_URLS=http://+:5000" --name To_Do_App todov1</b>
+```
+ -> docker run -it --rm -p 5000:5000 -e "ASPNETCORE_URLS=http://+:5000" --name To_Do_App todov1
+```
 
 - -it is running it interactively at the command prompt (as opposed to detached)(i interactive t terminal)
 - --rm automatically removes the container at exit (to clean up your local environment)
@@ -239,7 +249,10 @@ To prove to yourself that the container is running the app on your machine, open
 
 If you want to look around the container you can have it give you a bash prompt when you run it.  Normally you can just add /bin/bash  to the end of the command but if you have an entrypoint defined (we do) you have to run the command like this.
 
-<b> --> docker run -it --rm -p 5000:5000  --name ToDo_App --entrypoint /bin/bash todov1 </b>
+```
+--> docker run -it --rm -p 5000:5000  --name ToDo_App --entrypoint /bin/bash todov1 
+```
+
 
 That will give you a bash prompt right where your files are in the container. The working directory we defined, the "app" folder.
 
@@ -282,11 +295,16 @@ Open up your command line and type the following command (replacing it with your
 
 You are using docker to tag the image we created (todov1) to associate it with your docker account.  
 
-<b>-> docker tag todov1 <_YourDockerAccountName_>/todov1</b>
+```
+-> docker tag todov1 <_YourDockerAccountName_>/todov1
+```
 
 Next we want to push it to our DockerHub account. Run the following command at the command line. 
 
-<b>-> docker push <_YourDockerAccountName_>/todov1 </b>
+```
+-> docker push <_YourDockerAccountName_>/todov1
+```
+
 
 When it is done you should see something like the following.
 
@@ -297,7 +315,9 @@ You can check https://hub.Docker.com to verify it is there.  You now have your D
 
 If we want to pull the image from  Docker Hub to your local machine, we need to type 
 
-**-> docker pull accountname/imagename:tag.**
+```
+-> docker pull accountname/imagename:tag.
+```
 
 If you don’t specify the tag, you are going to pull the image tagged :latest
 
@@ -312,7 +332,9 @@ Before we can upload our container to the Azure Container Registry (ACR) we need
 
 We are going to do it using the Azure CLI.  One of the prerequisites before starting this tutorial was to have the Azure ClI installed. In addition to this, we need to also make sure that the version of the Azure CLI that we have is version 2.0.27 or higher.  Type the following command into your terminal.
 
-**-> az --version**
+```
+-> az --version
+```
 
 This will give you not only the version of the az cli but also all the command line interfaces that the az cli utilizes. 
 
@@ -325,7 +347,9 @@ This will give you not only the version of the az cli but also all the command l
  
 If you have not used the Azure CLI before you will need to log in using the command 
 
-**-> az login**
+```
+-> az login
+```
 
 This will print out the following line with a code to authenticate the azure cli with your Azure subscription.  If you have already done this, you can skip this step. 
 
@@ -333,7 +357,9 @@ This will print out the following line with a code to authenticate the azure cli
 
 If you want to test if you are signed in you can run the command to list the resource groups in your subscription.
 
-**-> az group list -o table**
+```
+-> az group list -o table
+```
 
 This will give you a list (in table format) of all your resource groups.
 
@@ -345,11 +371,19 @@ Now that we have confirmed we are logged in to azure from the command line we ca
 
 To create the resource group type the following command
 
-**-> az group create --name todov1rg --location eastus**
+```
+-> az group create --name todov1rg --location eastus
+
+```
+
+>Remember this resource group, we will be using it often during this workshop.** 
 
 Now we can create our registry.  Just type the following command into the terminal. 
 
-**-> az acr create --resource-group todov1rg --name <_YourRegistryName_> --sku Basic**
+```
+-> az acr create --resource-group todov1rg --name <_YourRegistryName_> --sku Basic
+```
+
 
 The registry name needs to be unique, so use <your email alias>todov1registry. 
 
@@ -363,7 +397,9 @@ When it returns you should see the follow output.
 
 The first thing we need to do is to log into the ACR that we just created. You can do that with the following command using the name we created in the last step. 
 
-**-> az acr login --name <_YourRegistryName_>**
+```
+-> az acr login --name <_YourRegistryName_>
+```
 
 You should receive a **Login Succeeded** when it is complete. 
 
@@ -373,7 +409,10 @@ We need to issue the following command using docker.
 
 First, just to remind us of the name of the local image, not the one we tagged for Dockerhub, run the following command to see a list of all of our local images.
 
-**-> docker image ls
+```
+-> docker image ls
+```
+
 
 You want to tag the todov1.  Not the ones that are already tagged for Dockerhub. (Your name will differ)
 
@@ -382,13 +421,19 @@ You want to tag the todov1.  Not the ones that are already tagged for Dockerhub.
 
 To tag it for ACR run the following fully qualified command. (which includes the .azurecr.io)
 
-**-> docker tag todov1 <_YourRegistryName_>.azurecr.io/todov1** 
+```
+-> docker tag todov1 <_YourRegistryName_>.azurecr.io/todov1
+```
+
 
 remember if you don't add a tag (with a colon like this todov1:beta) to the end of the image name it will be tagged as todov1:latest
 
 Finally, you can push the images using docker push.
 
-**-> docker push <_YourRegistryName_>.azurecr.io/todov1**
+```
+-> docker push <_YourRegistryName_>.azurecr.io/todov1
+```
+
 
 When it completes, you should see output similar to the following. 
 
@@ -512,17 +557,25 @@ Once we have done this we can use Docker to build the new image and push it to A
 Build image(dont forget the '.' at the end)
 (make sure you are in the directory that your dockerfile is in)
 
-<b> -> docker build -t todov1 .</b>
+```
+-> docker build -t todov1 .
+```
+
 
 Tag image for ACR
 
-<b>docker tag todov1 todov1registry.azurecr.io/todov1</b>
+```
+docker tag todov1 todov1registry.azurecr.io/todov1
+```
 
 Push to ACR (You may need to log in again to ACR - az acr login --name <YourRegistryName>)
 
-<b>docker push todov1registry.azurecr.io/todov1</b>
+```
+docker push todov1registry.azurecr.io/todov1
+```
 
-  When done, you command line will look similar to this (look for errors)
+
+  When done, your command line will look similar to this (look for errors)
 
 ```
 ➜  ToDoV2AddingDocker git:(master) ✗ docker push todov1registry.azurecr.io/todov1
@@ -565,7 +618,10 @@ Now normally you will be doing your deploying headless.  Meaning using some sort
 
 For our image we will enable the admin user on the registry so we can do it manually from the command line interface. To enable it, you run the following command if we want. (keep in mind we are still logged in to acr). 
 
-**-> az acr update --name <_YourRegistryName_> --admin-enabled true**
+```
+-> az acr update --name <_YourRegistryName_> --admin-enabled true
+```
+
 
 The rest of the section, we are going to again do it visually in the portal.
 
@@ -621,13 +677,21 @@ Next, we will deploy our container in a Kubernetes Cluster.
 ## Deploying your image in a Kubernetes Cluster
 
 ### Setting up the cluster
-Now we will deoploy our container to the fourth of our options, a Kubernetes cluster. To do this we will be using AKS the Microsoft Managed Kubernetes service.  We will use a combination of the azure-cli and the portal.  To begin, we first need to make sure that AKS is associated with your subscrition.  To do that, run the following command.
+Now we will deoploy our container to the fourth of our options, a Kubernetes cluster. To do this we will be using AKS, the Microsoft Managed Kubernetes service.  We will use a combination of the azure-cli and the portal to complete our tasks.  
 
-  <b> -> az provider register -n Microsoft.ContainerService</b>
+To begin, we first need to make sure that AKS is associated with your Azure subscrition.  To do that, run the following command.
+
+```
+-> az provider register -n Microsoft.ContainerService
+```
+
 
 When that finishes, we can create the AKS cluster inside the resource group that we have been using for this workshop **todov1rg** to do this, type the following command.
 
-  <b> -> az aks create --resource-group todov1rg --name todov1service --node-count 2 --generate-ssh-keys</b>
+```
+-> az aks create --resource-group todov1rg --name todov1service --node-count 2 --generate-ssh-keys
+```
+
 
 This will beging to create our cluster with two VMs and generate out ssh-keys for us. 
 
@@ -662,7 +726,10 @@ Kubectl, pronouced "Kube cuttle" or "Kube control" depending on who you ask, is 
 
 So to communicate with our Azure Kubernetes Cluster we need to connect **Kubectl** to our cluster. To do that we need to execute the following command. 
 
-  <b> -> az aks get-credentials --resource-group todov1rg --name todov1service</b>
+```
+  -> az aks get-credentials --resource-group todov1rg --name todov1service
+```
+
 
 You should see a message similar to the one below stating that it Merged as current context
 
@@ -671,20 +738,30 @@ You should see a message similar to the one below stating that it Merged as curr
 Once you have this done, you can run kubectl commands againts the cluster. Try a few of them out, starting with :
 
 Get all the commands you can run
-  <b> -> kubectl --help</b>  
+```
+-> kubectl --help
+```
 
 Get all the nodes in the cluster
-  <b> -> kubectl get nodes</b>
+```
+-> kubectl get nodes
+```
 
 Get Cluster component statuses
-  <b> -> kubectl get cs</b>
+```
+-> kubectl get cs
+```
 
 Get all pods(you dont have any yet)
-  <b> -> kubectl get pods</b>
+```
+-> kubectl get pods
+```
+
 
 Get all deployments
-  <b> -> kubectl get deployoments</b>
-
+```
+-> kubectl get deployoments
+```
 
 Feel free to try out other commands.
 
@@ -698,7 +775,9 @@ In the last exercise where we loaded our container to ACI (Azure container insta
 
 Either keep that page open or save them for our next command.  The command we need to run is the following:
 
-<b>kubectl create secret docker-registry SECRET_NAME --docker-server=REGISTRY_NAME.azurecr.io --docker-username=USERNAME --docker-password=PASSWORD --docker-email=ANY_VALID_EMAIL</b>
+```
+kubectl create secret docker-registry SECRET_NAME --docker-server=REGISTRY_NAME.azurecr.io --docker-username=USERNAME --docker-password=PASSWORD --docker-email=ANY_VALID_EMAIL
+```
 
 SECRET_NAME = todov1secret -- (This is the name you will use in the Yaml file.)
 
@@ -713,10 +792,15 @@ ANY_VALID_EMAIL = ummm any valid email :)
 
 When you have run this command you will then see the following on the command line.
 
-  <b>secret "todov1secret" created</b>
+```
+secret "todov1secret" created
+```
 
 
 Now we can load our our container into our cluster using the Yaml file.  I have created the file for you. You can find it in this repository called aks.yaml.  Before we run it, I am going to break it down into pieces and explain what it does.
+
+>**_IMPORTANT_** 
+..I DO NOT want you to create your own Yaml file, they are notoriously fickle and easy to mess up by not having the correct amount of spaces. Please use the Yaml file (aks.yaml) that is in this repository when running it.  Below is an explanation as to what you will find in the Yaml file. 
 
 First we are telling the cluster that we are creating a deployment called todo
 
@@ -742,7 +826,7 @@ We point the the container in ACR (I am using one that I had with and EXPOSE tag
     spec:
       containers:
       - name: todo
-        image: todov1registry.azurecr.io/todov1:expose
+        image: todov1registry.azurecr.io/todov1
 ```
 Next, we set the port that we want access to for the app. As you remember we also use expose in the docker file to expose port 5000. We set a few resource limits.
 
@@ -782,24 +866,37 @@ spec:
 
 Finally, we run the yaml file with the following command. (Make sure you are in the same directory as the Yaml file when you run it)  -f denotes filename
 
-<b> -> kubectl create -f aks.yaml </b>
+```
+-> kubectl create -f aks.yaml
+```
 
 This will start to deploy your containters, pods, replicas, etc..   Try running the commands we played with before. 
 
 Get all the nodes in the cluster
-  <b> -> kubectl get nodes</b>
+```
+-> kubectl get nodes
+```
 
 Get Cluster component statuses
-  <b> -> kubectl get cs</b>
+```
+ -> kubectl get cs
+```
 
 Get all pods(you dont have any yet)
-  <b> -> kubectl get pods</b>
+```
+-> kubectl get pods
+```
 
 Get all deployments
-  <b> -> kubectl get deployoments</b>
+```
+-> kubectl get deployoments
+```
 
 Get all servides
-  <b> -> kubectl get service</b>
+```
+-> kubectl get service
+```
+
 
 That last one is the one we need to test our cluster. Once created, the load balancer will have an external port that we can hit which will then send the call to the container on port 5000.
 
@@ -857,12 +954,17 @@ Since this is just a demo for us, we will grant admin privliges with the follow 
 
 Run this in your command line.
 
-<b> ->  kubectl create clusterrolebinding kubernetes-dashboard -n kube-system --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard</b>
+```
+->  kubectl create clusterrolebinding kubernetes-dashboard -n kube-system --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
+```
+
 
 
 Once this is done, you can try to bring up the dashboard again by running the following (which you had copied earlier from the portal)
 
-<b>-> az aks browse --resource-group todov1rg --name todov1service</b>
+```
+-> az aks browse --resource-group todov1rg --name todov1service
+```
 
 This will give you access to your dashboard as seen below.  You can get all the same information you get from Kubectl but now in an interface.
 
@@ -871,9 +973,7 @@ This will give you access to your dashboard as seen below.  You can get all the 
 From here feel free to play around with your cluster search the Kubectl commands (Kubectl --help) to remove pods, add pods, check on health, modify your Yaml.  Its just a demo so its ok if you break it. 
 
 Enjoy!!
-<pre><code>
 
-</code></pre>
 
 
 
