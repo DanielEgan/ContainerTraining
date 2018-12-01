@@ -441,7 +441,9 @@ When it completes, you should see output similar to the following.
 
 If you want to see it in the repository, you can run the following command.
 
-**->az acr repository list --name <_YourRegistryName_> --output table**
+```
+->az acr repository list --name <_YourRegistryName_> --output table
+```
 
 Or view it on the Azure portal http://portal.azure.com 
 
@@ -565,13 +567,13 @@ Build image(dont forget the '.' at the end)
 Tag image for ACR
 
 ```
-docker tag todov1 todov1registry.azurecr.io/todov1
+-> docker tag todov1 todov1registry.azurecr.io/todov1
 ```
 
 Push to ACR (You may need to log in again to ACR - az acr login --name <YourRegistryName>)
 
 ```
-docker push todov1registry.azurecr.io/todov1
+-> docker push todov1registry.azurecr.io/todov1
 ```
 
 
@@ -608,7 +610,6 @@ Finally, you can go to the Deployment Slots on yoyur web app and swap images OR 
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd10.png)
 
--> 
 
 Next, we will deploy to Azure Container Instances
 
