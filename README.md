@@ -449,9 +449,72 @@ Or view it on the Azure portal http://portal.azure.com
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/portalacr.png)
 
+Next, we will deploy to Azure Container Instances
+
+## Deploying your image to ACI (Azure Container Instance)
+
+Now normally you will be doing your deploying headless.  Meaning using some sort of CI/CD Pipeline to deploy your container from ACR to ACI or others. In that case you will want to authenticate using a service principal.  You can find a quickstart [here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-aci), on how to do it or more information on using service principals [here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal). 
+
+For our image we will enable the admin user on the registry so we can do it manually from the command line interface. To enable it, you run the following command if we want. (keep in mind we are still logged in to acr). 
+
+```
+-> az acr update --name <_YourRegistryName_> --admin-enabled true
+```
+
+
+The rest of the section, we are going to again do it visually in the portal.
+
+First we need to go to the portal and click on **Create A Resource** as we did before and search for **Container Instances**. Once the blade opens, click on **Create**.
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci1.png)
+
+From this page, you can see that we can create the instance from either a public image (Like our Dockerhub image) or from a private image (like our ACR image).  We will do a private images.  
+
+When you click on the **Private** toggle, you will boxes for :
+- Container Image
+- Image Registry login server
+- Image Registry username
+- Image Registry password.
+
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci2.png)
+
+You can get all of these from the registry that you created earlier.  To find it, on the left, 
+- click on Resource Groups 
+- Click on the resource group you created ( I called it todov1rg )
+- Click on the registry you created ( I called it todov1registry )
+- On the left of this blade click on **Access Keys** this will give you the information you need for your private registry. 
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci6.png)
+
+In the Configuration section, you want to set the following:
+
+- DNS name label -- The name that will be used, combined with the region you are in, to access your container instance. 
+- Port - We are going to leave 80 there even though it is not being used so we can add additional ports
+- Click on **Open additional ports** and add port 5000
+
+We will leave everything else as is but you can see we can add environment variables and command overrides if needed.  Click **OK** when done
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci3.png)
+
+This will bring up a summary for you to review. You can see that you can download a template to do this in an automated fashion at a later date.   Click on **OK** when done. 
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci4.png)
+
+When it is deployed, you can view the resource. To access your container, you can use the FQDN address. Also notice that you have and IP address which means if you would like you could put a load balancer in front of this (something that Azure Web Does for you )
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci5.png)
+
+Make sure that you add the port and api route **:5000/api/todo** 
+
+
+![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci7.png)
+
+
+
 Next we will run it in an Azure Web App.
 
-## Deploying your image as and Azure Web App
+## Deploying your image as an Azure Web App
 
 We are not going to be spending time on what an Azure Web App is other than acknowledging that it is a place in azure that allows you to host websites, apis, and now containers, with the ability to easily scale them, create minor CD/CI, among other things. We are going to use one as one way to host our simple todo api container.  
 
@@ -610,67 +673,6 @@ Finally, you can go to the Deployment Slots on yoyur web app and swap images OR 
 
 ![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/cicd10.png)
 
-
-Next, we will deploy to Azure Container Instances
-
-## Deploying your image to ACI (Azure Container Instance)
-
-Now normally you will be doing your deploying headless.  Meaning using some sort of CI/CD Pipeline to deploy your container from ACR to ACI or others. In that case you will want to authenticate using a service principal.  You can find a quickstart [here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-aci), on how to do it or more information on using service principals [here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal). 
-
-For our image we will enable the admin user on the registry so we can do it manually from the command line interface. To enable it, you run the following command if we want. (keep in mind we are still logged in to acr). 
-
-```
--> az acr update --name <_YourRegistryName_> --admin-enabled true
-```
-
-
-The rest of the section, we are going to again do it visually in the portal.
-
-First we need to go to the portal and click on **Create A Resource** as we did before and search for **Container Instances**. Once the blade opens, click on **Create**.
-
-![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci1.png)
-
-From this page, you can see that we can create the instance from either a public image (Like our Dockerhub image) or from a private image (like our ACR image).  We will do a private images.  
-
-When you click on the **Private** toggle, you will boxes for :
-- Container Image
-- Image Registry login server
-- Image Registry username
-- Image Registry password.
-
-
-![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci2.png)
-
-You can get all of these from the registry that you created earlier.  To find it, on the left, 
-- click on Resource Groups 
-- Click on the resource group you created ( I called it todov1rg )
-- Click on the registry you created ( I called it todov1registry )
-- On the left of this blade click on **Access Keys** this will give you the information you need for your private registry. 
-
-![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci6.png)
-
-In the Configuration section, you want to set the following:
-
-- DNS name label -- The name that will be used, combined with the region you are in, to access your container instance. 
-- Port - We are going to leave 80 there even though it is not being used so we can add additional ports
-- Click on **Open additional ports** and add port 5000
-
-We will leave everything else as is but you can see we can add environment variables and command overrides if needed.  Click **OK** when done
-
-![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci3.png)
-
-This will bring up a summary for you to review. You can see that you can download a template to do this in an automated fashion at a later date.   Click on **OK** when done. 
-
-![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci4.png)
-
-When it is deployed, you can view the resource. To access your container, you can use the FQDN address. Also notice that you have and IP address which means if you would like you could put a load balancer in front of this (something that Azure Web Does for you )
-
-![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci5.png)
-
-Make sure that you add the port and api route **:5000/api/todo** 
-
-
-![](https://raw.githubusercontent.com/DanielEgan/ContainerTraining/master/images/aci7.png)
 
 Next, we will deploy our container in a Kubernetes Cluster.
 
