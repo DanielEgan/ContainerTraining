@@ -385,7 +385,7 @@ Now we can create our registry.  Just type the following command into the termin
 ```
 
 
-The registry name needs to be unique, so use <your email alias>todov1registry. 
+The registry name needs to be unique, so use <your email alias><_YourRegistryName_>. 
 
 We are using the Basic sku for the registry which works well for testing.  There is also **Standard** and **Premium** skus.  [You can read about them here](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-skus).
 
@@ -403,7 +403,7 @@ The first thing we need to do is to log into the ACR that we just created. You c
 
 You should receive a **Login Succeeded** when it is complete. 
 
-To push an image to ACR you need to have it locally.  You could pull it from github and tag it but we already have ours local.  We just need to tag it close to the same way when we uploaded it to Dockerhub.
+To push an image to ACR you need to have it locally.  You could pull it from dockerhub and tag it but we already have ours local.  We just need to tag it close to the same way when we uploaded it to Dockerhub.
 
 We need to issue the following command using docker. 
 
