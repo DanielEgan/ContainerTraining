@@ -47,7 +47,14 @@ The first thing we want to do is modify our project to prepare it for containeri
 ```c#
 builder.WebHost.UseKestrel(serverOptions =>
 {
-  serverOptions.ListenAnyIP(5000); // Listen for incoming HTTP connection on port 5000.
+  if (builder.Environment.IsDevelopment())
+  {
+    serverOptions.ListenLocalhost(5000);
+  }
+  else
+  {
+    serverOptions.ListenAnyIP(5000); // Listen for incoming HTTP connection on port 5000.
+  }
 });
 ```
 
