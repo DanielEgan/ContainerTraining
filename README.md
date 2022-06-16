@@ -9,7 +9,7 @@ This is a quick guide to get up to speed using containers. We will walk you thro
 - Publishing the container to ACR (Azure Container Registry)
 - Deploy the container using a web app in azure
 - Setting up Continuous Deployment for your container in a Web App
-- Running the container in Azure using ACI (Azure Container Service)
+- Running the container in Azure using ACI (Azure Container Instance)
 - Running the container as part of a cluster using AKS (Azure Kubernetes Service)
 
 We will be pulling together a mixture of hands on labs from the docs and HOLs in this document that will walk you through these steps with commentary.
@@ -32,7 +32,7 @@ You will need the following things installed on your system to walk through thes
 
 ## Creating an ASP.NET Core Web API
 
-The first thing we need to to set up an ASP.NET Core Web API to have something to call when we testing out containers. For our purposes, this needs to be ASP.NET Core since we will be using kubernetes and running Linux containers. If you need to run Windows containers and classic ASP.NET then you could use Azure Service Fabric (not covered in this training) [Service Fabric Quick Start](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-quickstart-containers)
+The first thing we need to set up is an ASP.NET Core Web API to have something to call when we are testing our containers. For our purposes, this needs to be ASP.NET Core since we will be using kubernetes and running Linux containers. If you need to run Windows containers and classic ASP.NET then you could use Azure Service Fabric (not covered in this training) [Service Fabric Quick Start](https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-quickstart-containers)
 
 Using the following tutorial to create a simple todo Web API app using VS Code (or just use the one in the repository TodoApi):
 
@@ -171,91 +171,7 @@ It should produce something similar to this. Docker will create the directories,
 #1 transferring dockerfile: 472B done
 #1 DONE 0.0s
 
-#2 [internal] load .dockerignore
-#2 sha256:190c69b20b7d7bd19fa8b7d74f3e3ecbc5d1930bd8e93a8a2bbb2cf2a09bcc66
-#2 transferring context: 105B done
-#2 DONE 0.1s
-
-#3 resolve image config for docker.io/docker/dockerfile:1
-#3 sha256:ac072d521901222eeef550f52282877f196e16b0247844be9ceb1ccc1eac391d
-#3 ...
-
-#4 [auth] docker/dockerfile:pull token for registry-1.docker.io
-#4 sha256:2dc314a4a948d5201caad959bc3fedc60d8812245f41172a39d301e7fa9231f9
-#4 DONE 0.0s
-
-#3 resolve image config for docker.io/docker/dockerfile:1
-#3 sha256:ac072d521901222eeef550f52282877f196e16b0247844be9ceb1ccc1eac391d
-#3 DONE 5.1s
-
-#5 docker-image://docker.io/docker/dockerfile:1@sha256:443aab4ca21183e069e7d8b2dc68006594f40bddf1b15bbd83f5137bd93e80e2
-#5 sha256:48a83027ce1f5c304cb45d91fac69a612cf40aeee970f6f9794eda714e262e35
-#5 CACHED
-
-#6 [internal] load build definition from Dockerfile
-#6 sha256:6ef7dbc1de4e3747da2acb63632b1ab854036bea0068f7a4450fc56abc4376eb
-#6 DONE 0.0s
-
-#7 [internal] load .dockerignore
-#7 sha256:159da6ba1ce91ee649b9b46c194b769bd34749266d3b522a6dddd73f991c3b99
-#7 DONE 0.0s
-
-#8 [internal] load metadata for mcr.microsoft.com/dotnet/aspnet:6.0
-#8 sha256:ac4494cbca04ddb415c76edcbcc7688784c2a6ea65dd656286c013738aa3b75f
-#8 DONE 0.4s
-
-#9 [internal] load metadata for mcr.microsoft.com/dotnet/sdk:6.0
-#9 sha256:9eb4f6c3944cfcbfe18b9f1a753c769fc35341309a8d4a21f8937f47e94c712b
-#9 DONE 0.4s
-
-#12 [build-env 1/6] FROM mcr.microsoft.com/dotnet/sdk:6.0@sha256:59d5f3cfa61923f035d160c3452f45b8bbbb79222ec3433476b58dfa2553a80f
-#12 sha256:0a0b19c5f10ac999161246b63cfbcb6d50a123fc43dcbe2d7e6a686aae1b109c
-#12 DONE 0.0s
-
-#10 [stage-1 1/3] FROM mcr.microsoft.com/dotnet/aspnet:6.0@sha256:e0189fa2887805b5344d28deb397ce4cdda24a12e1690a4aaa24ee98c9930891
-#10 sha256:0477e2c7a08c58d896bd0daf79b1f1d650e4975957bf01002e91df539ae238ba
-#10 DONE 0.0s
-
-#14 [internal] load build context
-#14 sha256:70b2b4c80178ec0c5bfd4f0bc750e6294b0c3e971dfae46c66d527b476c24be8
-#14 transferring context: 40.43kB 0.1s
-#14 transferring context: 9.29MB 0.6s done
-#14 DONE 0.6s
-
-#13 [build-env 2/6] WORKDIR /app
-#13 sha256:05acf7dc78e229ecdfa0464d9bdfba70ce25016d95856acf1a6b234532c4587e
-#13 CACHED
-
-#15 [build-env 3/6] COPY *.csproj ./
-#15 sha256:cd17fe6b9a7581f85e0e1c0042db2e70d221dc67a6927d7820da2cd994bfbeef
-#15 CACHED
-
-#16 [build-env 4/6] RUN dotnet restore
-#16 sha256:c5cee86bf2a7f1b137c6ba94fff800745a0f85892c3628b4f652ce4ae770b86c
-#16 CACHED
-
-#17 [build-env 5/6] COPY . ./
-#17 sha256:2b0d3e20073e7fddaf62936b3fe19fe1cc4bed8e3651a8d190943e4af86cee5b
-#17 DONE 0.2s
-
-#18 [build-env 6/6] RUN dotnet publish -c Release -o out
-#18 sha256:505fddea54d3a50218c09b2d5daed79b43c902cc45bb3b337ec89278f48eb18e
-#18 0.566 Microsoft (R) Build Engine version 17.2.0+41abc5629 for .NET
-#18 0.566 Copyright (C) Microsoft Corporation. All rights reserved.
-#18 0.566
-#18 1.841   Determining projects to restore...
-#18 3.683   Restored /app/TodoApi.csproj (in 843 ms).
-#18 8.363   TodoApi -> /app/bin/Release/net6.0/TodoApi.dll
-#18 8.478   TodoApi -> /app/out/
-#18 DONE 8.6s
-
-#11 [stage-1 2/3] WORKDIR /app
-#11 sha256:5790d9d246621300d2780afef58e515532a82e570b8580baf68a70f6b5e8a4cf
-#11 CACHED
-
-#19 [stage-1 3/3] COPY --from=build-env /app/out .
-#19 sha256:523fdcb93ec048adf029f85134458e7ead7e3a5146224cef071911ac449eff09
-#19 DONE 0.2s
+# [MORE INTERMITTENT STEPS HERE...]
 
 #20 exporting to image
 #20 sha256:e8c613e07b0b7ff33893b694f7759a10d42e180f2b4dc349fb57dc6b71dcab00
