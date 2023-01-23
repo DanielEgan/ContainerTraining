@@ -28,7 +28,7 @@ You will need the following things installed on your system to walk through thes
 - If you are running on Mac or want to use VS Code:
   - [VSCode for Windows, Mac, or Linux](https://code.visualstudio.com/download) or other text editor (Vim, Sublime, etc...)
   - [C# for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp)
-- [.NET Core 6.0 SDK](https://www.microsoft.com/net/download/all) for running our ASP.NET Core projects
+- [.NET Core 6.0 SDK or 7.0](https://www.microsoft.com/net/download/all) for running our ASP.NET Core projects
 
 ## Creating an ASP.NET Core Web API
 
@@ -83,6 +83,11 @@ The file itself will only have the code sections that you need to type, in betwe
 ```dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 ```
+if you are using .NET 7 instead of 6, use below
+
+```dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+```
 
 Next we set the working directory and `EXPOSE` port 5000. This is where we will be building the app:
 
@@ -117,7 +122,16 @@ COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "TodoApi.dll"]
 ```
 
+If you are using .NET 7 instead of 6 use the below,
+
+```dockerfile
+# Build runtime image.
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
+WORKDIR /app
+COPY --from=build-env /app/out .
+ENTRYPOINT ["dotnet", "TodoApi.dll"]
 In total the **Dockerfile** will look like:
+```
 
 ```dockerfile
 # syntax=docker/dockerfile:1

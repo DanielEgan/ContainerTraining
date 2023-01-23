@@ -1,9 +1,14 @@
-﻿apiVersion: apps/v1beta1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: todo
+  labels:
+    deploy: todo
 spec:
   replicas: 3
+  selector:
+    matchLabels:
+      app: todo  
   template:
     metadata:
       labels:
@@ -11,7 +16,7 @@ spec:
     spec:
       containers:
       - name: todo
-        image: todov1registry.azurecr.io/todov1
+        image: "todov1registry.azurecr.io/todov1"
         ports:
         - containerPort: 80
         resources:
@@ -20,7 +25,7 @@ spec:
           limits:
             cpu: 500m
       imagePullSecrets:
-      - name: todov1secret
+      - name: todoapisecret
 ---
 apiVersion: v1
 kind: Service
