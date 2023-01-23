@@ -927,4 +927,12 @@ This will give you access to your dashboard as seen below. You can get all the s
 
 From here feel free to play around with your cluster search the Kubectl commands (Kubectl --help) to remove pods, add pods, check on health, modify your Yaml. Its just a demo so its ok if you break it.
 
+### Clean up
+
+Optional: If you like to clean up the Azure resources that have been created in this course, you can delete the resource group using the following command
+
+```bash
+az group delete --name todoapirg
+```
+
 Enjoy!!
